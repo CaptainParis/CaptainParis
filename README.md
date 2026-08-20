@@ -10,28 +10,28 @@ Seattle, Washington
 
 <img src="./hd-about.svg" width="620" alt="about"/>
 
-> Paper plugins and Discord bots, from Seattle.
+> Paper plugins, from Seattle.
 
-I write software for live Minecraft servers and the Discord around them:<br>
-player capture, in-chat sprites, and deployment tools for the 101st.
+I write Minecraft plugins for live servers — packet-level player<br>
+capture, sprites in chat, and editors that never leave the world.
 
 <img src="./hd-stack.svg" width="620" alt="stack"/>
 
-<samp>java &nbsp; kotlin &nbsp; python &nbsp; typescript &nbsp; paper &nbsp; protocollib &nbsp; discord &nbsp; docker &nbsp; git</samp>
+<samp>java &nbsp; kotlin &nbsp; python &nbsp; typescript &nbsp; paper &nbsp; protocollib &nbsp; docker &nbsp; git</samp>
 
 <img src="./hd-projects.svg" width="620" alt="projects"/>
 
 **[Mocap](https://github.com/CaptainParis/Mocap)** &nbsp;·&nbsp; <samp>java, paper</samp><br>
-Record player motion and the world around them, then play it back as<br>
-packet actors — not NPCs, not fake players. ProtocolLib entities.
+Record a player and the chunks around them, then replay the take as<br>
+packet actors — ProtocolLib entities, not NPCs or fake players.
 
 **[HeadSprites](https://github.com/CaptainParis/HeadSprites)** &nbsp;·&nbsp; <samp>java, paper</samp><br>
-Custom 8×8 sprites as player heads in chat. Draw one, MineSkin signs<br>
-it, type <code>&lt;head:heart&gt;</code>. No resource pack. Paper 1.21.9+.
+Draw an 8×8 sprite or paste an image. MineSkin signs a head, and<br>
+<code>&lt;head:heart&gt;</code> puts it in chat. No resource pack. Paper 1.21.9+.
 
-**[DeploymentBot](https://github.com/CaptainParis/DeploymentBot)** &nbsp;·&nbsp; <samp>typescript</samp><br>
-Discord bot that runs deployments for the 101st. Built with<br>
-Death Trooper.
+**BlockDisplayEditor** &nbsp;·&nbsp; <samp>kotlin, paper</samp><br>
+Move, rotate, and compose block displays in-game. No export step —<br>
+you build the scene from inside the world.
 
 <img src="./hd-stats.svg" width="620" alt="stats"/>
 

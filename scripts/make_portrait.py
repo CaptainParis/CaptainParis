@@ -56,6 +56,17 @@ def prep(path, crop=None, cutout=False, curve=CURVE, clahe_clip=CLAHE_CLIP):
         from rembg import remove
         src = remove(src)
         alpha = np.array(src.split()[-1])
+        ys, xs = np.where(alpha >= 20)
+        if len(xs):
+            pad = int(max(src.size) * 0.08)
+            box = (
+                max(0, int(xs.min()) - pad),
+                max(0, int(ys.min()) - pad),
+                min(src.width, int(xs.max()) + 1 + pad),
+                min(src.height, int(ys.max()) + 1 + pad),
+            )
+            src = src.crop(box)
+            alpha = np.array(src.split()[-1])
 
     white = Image.new("RGBA", src.size, (255, 255, 255, 255))
     gray = np.array(Image.alpha_composite(white, src).convert("L"))
