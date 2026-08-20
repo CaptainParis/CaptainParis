@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+source/JetBrainsMono/
+source/JetBrainsMono.zip
+source/*.ttf
+source/ascii-preview.txt
+source/preview-*.png
+source/preview-readme.html
+.DS_Store
+Thumbs.db

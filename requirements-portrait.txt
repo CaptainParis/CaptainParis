@@ -1,0 +1,7 @@
+# Local only — portrait generation and font subsetting.
+# The stats workflow uses the Python standard library alone.
+pillow>=10.0
+numpy>=1.26
+opencv-python-headless>=4.9
+fonttools>=4.53
+brotli>=1.1
