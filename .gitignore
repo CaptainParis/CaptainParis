@@ -6,6 +6,9 @@ source/JetBrainsMono/
 source/JetBrainsMono.zip
 source/*.ttf
 source/ascii-preview.txt
+source/ascii-*.svg
+source/avatar-*.*
+source/prev-*.txt
 source/preview-*.png
 source/preview-readme.html
 .DS_Store

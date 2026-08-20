@@ -10,16 +10,14 @@ Seattle, Washington
 
 <img src="./hd-about.svg" width="620" alt="about"/>
 
-> Minecraft plugins and Discord bots that have to work on a live server.
+> Paper plugins and Discord bots, from Seattle.
 
-I write Paper plugins and Discord bots from Seattle. The interesting<br>
-problems are the ones that happen with real players on: recording a<br>
-body, putting a sprite in chat, running a deployment without a<br>
-spreadsheet.
+I write software for live Minecraft servers and the Discord around them:<br>
+player capture, in-chat sprites, and deployment tools for the 101st.
 
 <img src="./hd-stack.svg" width="620" alt="stack"/>
 
-<samp>java &nbsp; kotlin &nbsp; typescript &nbsp; paper &nbsp; protocollib &nbsp; discord &nbsp; git</samp>
+<samp>java &nbsp; kotlin &nbsp; python &nbsp; typescript &nbsp; paper &nbsp; protocollib &nbsp; discord &nbsp; docker &nbsp; git</samp>
 
 <img src="./hd-projects.svg" width="620" alt="projects"/>
 
