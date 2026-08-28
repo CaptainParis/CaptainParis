@@ -12,13 +12,21 @@ REGULAR = TTF_DIR / "JetBrainsMono-Regular.ttf"
 SEMIBOLD = TTF_DIR / "JetBrainsMono-SemiBold.ttf"
 
 RAMP = " .`:-=+*cs#%@"
-HEADINGS = "abcdefghijklmnopqrstuvwxyz "
+
+# The stat graphics draw an 80-column terminal screen, so beyond basic latin
+# they need the two blocks that make a screen look like one: box drawing
+# (U+2500-257F) for the frames and block elements (U+2580-259F) for the bars,
+# the sparkline and the year map. U+00B7 is the empty-cell dot.
+SCREEN = "U+0020-007E,U+00B7,U+2500-257F,U+2580-259F"
+
+# Headings are one rule line: uppercase, the two ends, and the horizontal run.
+HEADINGS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789═╡╞"
 
 JOBS = [
     (REGULAR, "jbmono-ramp.woff2", {"text": RAMP}),
     (SEMIBOLD, "jbmono-head.woff2", {"text": HEADINGS}),
-    (REGULAR, "jbmono-400.woff2", {"unicodes": "U+0020-007E"}),
-    (SEMIBOLD, "jbmono-600.woff2", {"unicodes": "U+0020-007E"}),
+    (REGULAR, "jbmono-400.woff2", {"unicodes": SCREEN}),
+    (SEMIBOLD, "jbmono-600.woff2", {"unicodes": SCREEN}),
 ]
 
 

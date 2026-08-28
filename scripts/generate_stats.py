@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""Draw the profile README's stat graphics from the GitHub GraphQL API.
+"""Draw the profile README's graphics as an 80-column bulletin-board screen.
 
 No third-party services and no dependencies — standard library only.
 
-Outputs, all sharing one visual language with ascii.svg:
-  stats.svg   hero total + weekly sparkline
+Every file is the same thing: a grid of monospace characters, 80 columns wide,
+framed in box drawing, printed one line at a time. Charts are drawn in block
+elements rather than paths, so a bar and a letter sit on the same grid.
+
+Outputs:
+  banner.svg  the name in shadowed block letters, plus a status line
+  stats.svg   contribution totals and a 52-week sparkline
   streak.svg  current and longest streak
   langs.svg   top languages, by bytes and by repo count
-  year.svg    the year as a character map, in the portrait's own ramp
-  hd-*.svg    section headings in the same mono face
+  year.svg    the year as a 7x53 character map
+  hd-*.svg    section heading rules
 
-Every file uses the portrait's grey ink, a monospace face, a transparent
-background, and the same left-to-right clipPath reveal with a cursor riding
-the edge. Motion is SMIL because GitHub strips <script> from READMEs.
+Motion is SMIL because GitHub strips <script> from READMEs: each line is
+revealed by a clipPath wipe, staggered top to bottom, frozen when it lands.
 
 Env:
   GITHUB_TOKEN  required
@@ -32,12 +36,16 @@ API = "https://api.github.com/graphql"
 # Two things are pinned for determinism:
 #  * the contribution window, to whole UTC days — otherwise "the past year" is
 #    measured from request time and days drift between week buckets, moving the
-#    sparkline a fraction of a pixel and committing noise every night;
+#    sparkline a fraction of a cell and committing noise every night;
 #  * privacy: PUBLIC on repositories — otherwise a personal token sees private
 #    repos and a workflow token doesn't, so language totals disagree.
 QUERY = """
 query($login: String!, $from: DateTime!, $to: DateTime!) {
   user(login: $login) {
+    login
+    name
+    createdAt
+    followers { totalCount }
     contributionsCollection(from: $from, to: $to) {
       contributionCalendar {
         totalContributions
@@ -46,6 +54,7 @@ query($login: String!, $from: DateTime!, $to: DateTime!) {
     }
     repositories(first: 100, ownerAffiliations: OWNER, isFork: false,
                  privacy: PUBLIC) {
+      totalCount
       nodes {
         languages(first: 12, orderBy: {field: SIZE, direction: DESC}) {
           edges { size node { name } }
@@ -85,12 +94,35 @@ def font_head():
     return face("jbmono-head.woff2", 600)
 
 
+# The screen. 620px wide over 80 columns is 7.75px a cell, and JetBrains Mono
+# advances 0.600 em, so the font size falls out of the cell width. Change one
+# and the frames stop meeting at the corners.
 WIDTH = 620
-LEFT = 34
-REVEAL = 1.30
-RAMP = [" ", ":", "+", "#", "@"]
+COLS = 80
+CW = WIDTH / COLS
+FS = CW / 0.600
+LH = 15.5
+PAD_T = 3
+PAD_B = 5
+
+SPARK = "▁▂▃▄▅▆▇█"          # eight heights, for the weekly line
+EIGHTHS = "▏▎▍▌▋▊▉"         # partial cells, for the ends of bars
+TRACK = "░"                 # the unfilled part of a bar
+YEAR_RAMP = ["·", "░", "▒", "▓", "█"]
+
 MON = ["jan", "feb", "mar", "apr", "may", "jun",
        "jul", "aug", "sep", "oct", "nov", "dec"]
+
+# ANSI-shadow block letters, only for the name this profile actually prints.
+# Anything else falls back to plain uppercase, which is why the fallback exists
+# rather than a full 36-glyph alphabet nobody here would draw.
+GLYPHS = {
+    "P": ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔═══╝ ", "██║     ", "╚═╝     "],
+    "A": [" █████╗ ", "██╔══██╗", "███████║", "██╔══██║", "██║  ██║", "╚═╝  ╚═╝"],
+    "R": ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔══██╗", "██║  ██║", "╚═╝  ╚═╝"],
+    "I": ["██╗", "██║", "██║", "██║", "██║", "╚═╝"],
+    "S": ["███████╗", "██╔════╝", "███████╗", "╚════██║", "███████║", "╚══════╝"],
+}
 
 
 # ---------------------------------------------------------------- data
@@ -179,182 +211,253 @@ def summarise(user):
     cur, best = streaks(days)
     by_size, by_repo = languages(user["repositories"]["nodes"])
     return dict(
+        login=user["login"],
+        name=user.get("name") or user["login"],
+        since=user["createdAt"][:4],
+        repos=user["repositories"]["totalCount"],
+        followers=user["followers"]["totalCount"],
         total=cal["totalContributions"],
         active=sum(1 for d in days if d["contributionCount"] > 0),
+        days=len(days),
         best_week=max(weekly) if weekly else 0,
         weekly=weekly, weeks=weeks,
         current=cur, longest=best,
         by_size=by_size, by_repo=by_repo)
 
 
+# ---------------------------------------------------------------- screen
+
+def esc(text):
+    return text.replace("&", "&amp;").replace("<", "&lt;")
+
+
+def run(col, text, cls="d-f", bold=False):
+    return (col, text, cls, bold)
+
+
+def rule(text):
+    """A whole line of frame."""
+    return [run(0, text, "m-f")]
+
+
+def box(title, body, w=COLS):
+    """Frame `body` in double lines with `title` cut into the top edge.
+
+    A body entry is either a string, a list of runs whose columns are relative
+    to the first content column, or the sentinel "-" for a light divider.
+    """
+    lead = f"╔═[ {title.upper()} ]"
+    rows = [[run(0, lead, "m-f"), run(len(lead), "═" * (w - 1 - len(lead)) + "╗",
+                                      "m-f")]]
+    for entry in body:
+        if entry == "-":
+            rows.append(rule("╟" + "─" * (w - 2) + "╢"))
+            continue
+        runs = [run(0, "║", "m-f"), run(w - 1, "║", "m-f")]
+        cells = [run(0, entry)] if isinstance(entry, str) else entry
+        runs += [run(c + 2, t, cl, b) for c, t, cl, b in cells]
+        rows.append(runs)
+    rows.append(rule("╚" + "═" * (w - 2) + "╝"))
+    return rows
+
+
+def style(font=None):
+    def block(t):
+        return (f".d-f{{fill:{t['data']}}}.e-f{{fill:{t['emph']}}}"
+                f".m-f{{fill:{t['dim']}}}.f-f{{fill:{t['rule']}}}")
+    return (f"<style>{font or font_text()}"
+            f"{block(LIGHT)}"
+            f"@media(prefers-color-scheme:dark){{{block(DARK)}}}</style>")
+
+
+def screen(rows, font=None, stagger=0.055, dur=0.34, cursor=None):
+    """Print `rows` one line at a time, each wiped in left to right.
+
+    `cursor` is (row, column) for a block that keeps blinking after the print —
+    a terminal that has finished but is still waiting for you.
+    """
+    h = PAD_T + len(rows) * LH + PAD_B
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" '
+           f'height="{h:.0f}" viewBox="0 0 {WIDTH} {h:.0f}" fill="none" '
+           f'font-family="{MONO}" font-size="{FS:.4f}">' + style(font)]
+
+    for i, runs in enumerate(rows):
+        if not runs:
+            continue
+        y = PAD_T + i * LH + FS - 2.4
+        span = max((c + len(t)) for c, t, _, _ in runs) * CW
+        delay = 0.18 + i * stagger
+        cid = f"w{i}"
+        out.append(f'<clipPath id="{cid}"><rect x="0" y="{PAD_T + i * LH:.2f}" '
+                   f'height="{LH:.2f}" width="0"><animate '
+                   f'attributeName="width" from="0" to="{span:.1f}" '
+                   f'begin="{delay:.2f}s" dur="{dur}s" fill="freeze"/>'
+                   f'</rect></clipPath>')
+        out.append(f'<g clip-path="url(#{cid})">')
+        for c, t, cls, bold in sorted(runs):
+            weight = ' font-weight="600"' if bold else ""
+            out.append(f'<text xml:space="preserve" x="{c * CW:.2f}" '
+                       f'y="{y:.2f}" class="{cls}"{weight}>{esc(t)}</text>')
+        out.append("</g>")
+
+    if cursor:
+        r, c = cursor
+        begin = 0.18 + len(rows) * stagger + dur
+        out.append(f'<rect x="{c * CW:.2f}" y="{PAD_T + r * LH + 2.2:.2f}" '
+                   f'width="{CW:.2f}" height="{LH - 4:.2f}" class="e-f" '
+                   f'opacity="0"><set attributeName="opacity" to="1" '
+                   f'begin="{begin:.2f}s"/><animate attributeName="opacity" '
+                   f'values="1;1;0;0" dur="1.06s" begin="{begin:.2f}s" '
+                   f'repeatCount="indefinite"/></rect>')
+
+    out.append("</svg>")
+    return "".join(out)
+
+
+# ---------------------------------------------------------------- charts
+
+def bar(value, top, width):
+    """A bar in block elements, to an eighth of a cell, on a dotted track."""
+    if top <= 0:
+        return TRACK * width
+    cells = max(0.0, min(1.0, value / top)) * width
+    full = int(cells)
+    rest = cells - full
+    part = EIGHTHS[int(rest * 8) - 1] if int(rest * 8) else ""
+    return ("█" * full + part).ljust(width, TRACK)[:width]
+
+
+def sparkline(values):
+    peak = max(values) if values else 0
+    if peak <= 0:
+        return "·" * len(values)
+    out = []
+    for v in values:
+        if v <= 0:
+            out.append("·")
+        else:
+            i = int(round((v / peak) * (len(SPARK) - 1)))
+            out.append(SPARK[i])
+    return "".join(out)
+
+
+def block_name(text):
+    """The name in shadowed block letters, or None if a letter is missing."""
+    if not all(ch in GLYPHS for ch in text):
+        return None
+    height = max(len(g) for g in GLYPHS.values())
+    return ["".join(GLYPHS[ch][r] for ch in text) for r in range(height)]
+
+
 # ---------------------------------------------------------------- drawing
 
-def style(extra="", font=None):
-    def block(t):
-        return (f".d-f{{fill:{t['data']}}}.d-s{{stroke:{t['data']}}}"
-                f".e-f{{fill:{t['emph']}}}.m-f{{fill:{t['dim']}}}"
-                f".u-s{{stroke:{t['rule']}}}.r{{stroke:{t['surface']}}}")
-    return (f"<style>{font or font_text()}"
-            f"{block(LIGHT)}.w{{fill:{LIGHT['data']};opacity:.13}}{extra}"
-            f"@media(prefers-color-scheme:dark){{{block(DARK)}"
-            f".w{{fill:{DARK['data']};opacity:.16}}}}</style>")
+def draw_banner(s):
+    name = s["name"].upper().replace(" ", "")[:8]
+    art = block_name(name)
+    side = [f"github.com/{s['login']}",
+            "PAPER PLUGINS FOR LIVE SERVERS",
+            f"SEATTLE, WASHINGTON · SINCE {s['since']}"]
 
+    body = [""]
+    if art:
+        gap = max(len(art[0]) + 4, 44)
+        for i, line in enumerate(art):
+            cells = [run(0, line, "e-f", True)]
+            if 1 <= i <= len(side):
+                cells.append(run(gap, side[i - 1], "d-f"))
+            body.append(cells)
+    else:
+        body.append([run(0, name, "e-f", True)])
+        body += [[run(0, t)] for t in side]
+    body.append("")
+    body.append("-")
 
-def head(w, h, font=None):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
-            f'viewBox="0 0 {w} {h}" fill="none" font-family="{MONO}">'
-            + style(font=font))
+    status = (f"REPOS {s['repos']}", f"FOLLOWERS {s['followers']}",
+              f"CONTRIBUTIONS {s['total']:,}", "STATUS ONLINE")
+    line, col = [], 0
+    for item in status:
+        head, tail = item.split(" ", 1)
+        line.append(run(col, head, "m-f"))
+        line.append(run(col + len(head) + 1, tail, "e-f", True))
+        col += len(item) + 4
+    body.append(line)
 
-
-def fade(delay, dur=0.45):
-    return (f'<animate attributeName="opacity" from="0" to="1" '
-            f'begin="{delay:.2f}s" dur="{dur}s" fill="freeze"/>')
-
-
-def wipe(cid, x, y, w, h, delay, dur=REVEAL):
-    clip = (f'<clipPath id="{cid}"><rect x="{x}" y="{y}" height="{h}" width="0">'
-            f'<animate attributeName="width" from="0" to="{w}" '
-            f'begin="{delay:.2f}s" dur="{dur}s" fill="freeze"/></rect></clipPath>')
-    cursor = (f'<rect y="{y}" width="2" height="{h}" class="d-f" opacity="0">'
-              f'<animate attributeName="x" from="{x}" to="{x + w}" '
-              f'begin="{delay:.2f}s" dur="{dur}s" fill="freeze"/>'
-              f'<set attributeName="opacity" to="0.55" begin="{delay:.2f}s"/>'
-              f'<set attributeName="opacity" to="0" '
-              f'begin="{delay + dur:.2f}s"/></rect>')
-    return clip, cursor
-
-
-def label(x, y, text, size=11, cls="m-f", anchor="start", extra=""):
-    a = f' text-anchor="{anchor}"' if anchor != "start" else ""
-    return (f'<text x="{x}" y="{y}" class="{cls}" font-size="{size}"{a}'
-            f'{extra}>{text}</text>')
-
-
-def hbar(x, y, w, h, cls="d-f", r=3.0):
-    if w <= 0.6:
-        return ""
-    r = min(r, h / 2.0, w)
-    return (f'<path d="M{x:.1f} {y:.1f}H{x + w - r:.1f}'
-            f'Q{x + w:.1f} {y:.1f} {x + w:.1f} {y + r:.1f}'
-            f'V{y + h - r:.1f}Q{x + w:.1f} {y + h:.1f} {x + w - r:.1f} {y + h:.1f}'
-            f'H{x:.1f}Z" class="{cls}"/>')
+    rows = box(name or s["login"], body)
+    return screen(rows, cursor=(len(rows) - 2, col + 2))
 
 
 def draw_stats(s):
-    H = 148
     weekly = s["weekly"] or [0]
-    peak = max(weekly) or 1
-    p = [head(WIDTH, H)]
-    p.append(f'<g opacity="0">{fade(0.10)}'
-             + label(0, 50, s["total"], 52, "e-f", extra=' font-weight="600"')
-             + label(0, 72, "contributions in the last year", 12) + '</g>')
-    for i, (val, lab) in enumerate([(s["active"], "active days"),
-                                    (s["best_week"], "best week")]):
-        p.append(f'<g opacity="0">{fade(0.30 + i * 0.12)}'
-                 + label(WIDTH, 30 + i * 40, val, 19, "e-f", "end",
-                         ' font-weight="600"')
-                 + label(WIDTH, 47 + i * 40, lab, 11, "m-f", "end") + '</g>')
+    figures = [(f"{s['total']:,}", "TOTAL"),
+               (f"{s['active']}", "ACTIVE DAYS"),
+               (f"{s['best_week']}", "BEST WEEK"),
+               (f"{s['total'] / max(len(weekly), 1):.1f}", "PER WEEK")]
 
-    base, top = H - 10, H - 58
-    span = base - top
-    step = WIDTH / max(len(weekly) - 1, 1)
-    pts = [(i * step, base - (v / peak) * span) for i, v in enumerate(weekly)]
-    clip, cursor = wipe("rs", 0, top - 6, WIDTH, span + 8, 0.50)
-    p.append(clip)
-    p.append('<g clip-path="url(#rs)">')
-    p.append(f'<path d="M{pts[0][0]:.1f} {base:.1f}'
-             + "".join(f'L{x:.1f} {y:.1f}' for x, y in pts)
-             + f'L{pts[-1][0]:.1f} {base:.1f}Z" class="w"/>')
-    p.append(f'<path d="M{pts[0][0]:.1f} {pts[0][1]:.1f}'
-             + "".join(f'L{x:.1f} {y:.1f}' for x, y in pts[1:])
-             + f'" class="d-s" stroke-width="2" stroke-linejoin="round" '
-             f'stroke-linecap="round"/>')
-    p.append("</g>")
-    p.append(cursor)
-    ex, ey = pts[-1]
-    p.append(f'<circle cx="{ex - 2:.1f}" cy="{ey:.1f}" r="4.5" class="e-f r" '
-             f'stroke-width="2" opacity="0">{fade(0.50 + REVEAL, 0.35)}</circle>')
-    p.append("</svg>")
-    return "".join(p)
+    nums, labs, col = [], [], 0
+    for value, label in figures:
+        width = max(len(value), len(label)) + 5
+        nums.append(run(col, value, "e-f", True))
+        labs.append(run(col, label, "m-f"))
+        col += width
+
+    spark = sparkline(weekly)
+    body = [nums, labs, "",
+            [run(0, spark, "d-f"),
+             run(len(spark) + 3, f"{len(weekly)} WEEKS", "m-f")]]
+    return screen(box("contributions", body))
 
 
 def draw_streak(s):
-    H = 96
+    mid = 38
     cells = []
-    for k, lab in (("current", "current streak"), ("longest", "longest streak")):
-        r = s[k]
-        span = (f"{pretty(r['start'])} &#8211; {pretty(r['end'])}"
-                if r["length"] else "&#8212;")
-        cells.append((r["length"], lab, span))
+    for key, label in (("current", "CURRENT"), ("longest", "LONGEST")):
+        r = s[key]
+        span = (f"{pretty(r['start'])} – {pretty(r['end'])}"
+                if r["length"] else "—")
+        cells.append((label, r["length"], span))
 
-    p = [head(WIDTH, H)]
-    mid = WIDTH / 2
-    p.append(f'<line x1="{mid:.0f}" y1="16" x2="{mid:.0f}" y2="80" '
-             f'class="u-s" stroke-width="1" opacity="0">{fade(0.20)}</line>')
-    for i, (val, lab, span) in enumerate(cells):
-        x = LEFT if i == 0 else mid + LEFT
-        p.append(f'<g opacity="0">{fade(0.12 + i * 0.14)}'
-                 + label(x, 44, f"{val}", 34, "e-f", extra=' font-weight="600"')
-                 + label(x, 64, lab, 11)
-                 + label(x, 80, span, 10) + '</g>')
-    p.append("</svg>")
-    return "".join(p)
+    body = []
+    for line in range(2):
+        row = [run(mid, "│", "m-f")]
+        for i, (label, length, span) in enumerate(cells):
+            x = 0 if i == 0 else mid + 3
+            if line == 0:
+                row.append(run(x, label, "m-f"))
+                row.append(run(x + 10, f"{length}", "e-f", True))
+                row.append(run(x + 10 + len(str(length)) + 1, "DAYS", "d-f"))
+            else:
+                row.append(run(x + 10, span, "d-f"))
+        body.append(row)
+    return screen(box("streak", body))
 
 
 def draw_langs(s):
-    rows = max(len(s["by_size"]), len(s["by_repo"]), 1)
-    H = 26 + rows * 22 + 6
-    colw = (WIDTH - LEFT - 30) / 2
-    name_w, bar_max = 82, colw - 82 - 44
-
-    p = [head(WIDTH, H)]
-    groups = [(LEFT, "by bytes", s["by_size"], True),
-              (LEFT + colw + 30, "by repos", s["by_repo"], False)]
-    for gi, (gx, title, data, as_pct) in enumerate(groups):
-        p.append(f'<g opacity="0">{fade(0.10 + gi * 0.10)}'
-                 + label(gx, 12, title.upper(), 9, "m-f",
-                         extra=' letter-spacing="1.3"') + '</g>')
-        if not data:
-            continue
-        top = max(v for _, v in data) or 1
-        total = sum(v for _, v in data) or 1
-        cid = f"rl{gi}"
-        clip, cursor = wipe(cid, gx + name_w, 20, bar_max, rows * 22,
-                            0.34 + gi * 0.12, 0.95)
-        p.append(clip)
-        for ri, (name, val) in enumerate(data):
-            y = 26 + ri * 22
-            shown = (f"{val / total * 100:.0f}%" if as_pct else f"{val}")
-            p.append(f'<g opacity="0">{fade(0.24 + gi * 0.10 + ri * 0.05)}'
-                     + label(gx, y + 8, name.lower()[:11], 11, "e-f")
-                     + label(gx + colw - 6, y + 8, shown, 11, "m-f", "end")
-                     + '</g>')
-            p.append(f'<g clip-path="url(#{cid})">'
-                     + hbar(gx + name_w, y, bar_max * val / top, 7)
-                     + '</g>')
-        p.append(cursor)
-    p.append("</svg>")
-    return "".join(p)
-
-
-def draw_heading(word):
-    FS = 16
-    H = 26
-    text_end = len(word) * FS * 0.6 + 18
-    p = [head(WIDTH, H, font=font_head())]
-    p.append(label(0, 18, word, FS, "e-f", extra=' font-weight="600"'))
-    p.append(f'<line x1="{text_end:.0f}" y1="12.5" x2="{WIDTH}" y2="12.5" '
-             f'class="u-s" stroke-width="1"/>')
-    p.append("</svg>")
-    return "".join(p)
+    barw, namew = 34, 12
+    total = sum(v for _, v in s["by_size"]) or 1
+    body = [[run(0, "BY BYTES", "m-f")]]
+    for name, val in s["by_size"]:
+        top = max(v for _, v in s["by_size"]) or 1
+        pct = val / total * 100
+        body.append([run(0, name.lower()[:namew - 1], "e-f", True),
+                     run(namew, bar(val, top, barw), "d-f"),
+                     run(namew + barw + 2, f"{pct:5.1f}%", "m-f")])
+    if s["by_repo"]:
+        body.append("-")
+        top = max(v for _, v in s["by_repo"]) or 1
+        line, col = [run(0, "BY REPOS", "m-f")], 12
+        for name, val in s["by_repo"]:
+            label = name.lower()[:10]
+            line.append(run(col, label, "e-f", True))
+            line.append(run(col + len(label) + 1, bar(val, top, 4), "d-f"))
+            line.append(run(col + len(label) + 6, f"{val}", "m-f"))
+            col += len(label) + 9
+        body.append(line)
+    return screen(box("languages", body))
 
 
 def draw_year(s):
-    FS, LH, COLW = 9.2, 11.0, 2
-    CW = FS * 0.6
-    pad_l, pad_t = LEFT, 44
     weeks = s["weeks"]
-    H = int(pad_t + 7 * LH + 26)
+    pad = 6
 
     def level(v):
         for i, cut in enumerate((0, 2, 5, 9)):
@@ -362,59 +465,43 @@ def draw_year(s):
                 return i
         return 4
 
-    p = [head(WIDTH, H)]
-    p.append(f'<g opacity="0">{fade(0.10)}'
-             + label(pad_l, 16, "THE YEAR", 9, "m-f",
-                     extra=' letter-spacing="1.3"')
-             + label(pad_l, 32, f"{s['active']} of "
-                     f"{sum(len(w) for w in weeks)} days had a contribution", 11)
-             + '</g>')
+    legend = "LESS " + "".join(YEAR_RAMP) + " MORE"
+    body = [[run(0, f"{s['active']}", "e-f", True),
+             run(len(str(s['active'])) + 1,
+                 f"of {s['days']} days had a contribution", "d-f"),
+             run(76 - len(legend), legend, "m-f")], ""]
 
-    lx = WIDTH - 6
-    p.append(f'<g opacity="0">{fade(1.30)}'
-             + label(lx - 78, 32, "less", 9, "m-f", "end")
-             + f'<text xml:space="preserve" x="{lx - 72}" y="32" class="d-f" '
-             f'font-size="{FS}">{" ".join(RAMP[1:])}</text>'
-             + label(lx, 32, "more", 9, "m-f", "end") + '</g>')
+    months = [" "] * (pad + len(weeks))
+    last, last_col = None, -99
+    for i, w in enumerate(weeks):
+        m = int(w[0]["date"][5:7])
+        col = pad + i
+        if m != last and i < len(weeks) - 1 and col - last_col >= 4:
+            months[col:col + 3] = list(MON[m - 1])
+            last_col = col
+        last = m
+    body.append([run(0, "".join(months).rstrip(), "m-f")])
 
     for r in range(7):
         chars = []
         for w in weeks:
             day = next((d for d in w if d.get("weekday") == r), None)
-            v = day["contributionCount"] if day else 0
-            chars.append(RAMP[level(v)] * COLW)
-        line = "".join(chars).rstrip()
-        if not line:
-            continue
-        y = pad_t + r * LH
-        w_px = max(len(line), 1) * CW
-        cid = f"ry{r}"
-        delay = 0.30 + r * 0.07
-        p.append(f'<clipPath id="{cid}"><rect x="{pad_l}" y="{y}" '
-                 f'height="{LH}" width="0"><animate attributeName="width" '
-                 f'from="0" to="{w_px:.1f}" begin="{delay:.2f}s" dur="0.40s" '
-                 f'fill="freeze"/></rect></clipPath>')
-        safe = line.replace("&", "&amp;").replace("<", "&lt;")
-        p.append(f'<g clip-path="url(#{cid})"><text xml:space="preserve" '
-                 f'x="{pad_l}" y="{y + FS - 0.6:.1f}" class="d-f" '
-                 f'font-size="{FS}">{safe}</text></g>')
+            chars.append(YEAR_RAMP[level(day["contributionCount"] if day else 0)])
+        label = {1: "MON", 3: "WED", 5: "FRI"}.get(r, "")
+        body.append([run(0, label, "m-f"), run(pad, "".join(chars), "d-f")])
 
-    for r, lab in ((1, "mon"), (3, "wed"), (5, "fri")):
-        p.append(label(pad_l - 7, pad_t + r * LH + FS - 0.6, lab, 9, "m-f",
-                       "end"))
+    return screen(box("the year", body), stagger=0.07)
 
-    last_m, last_x = None, -999.0
-    base_y = pad_t + 7 * LH + 13
-    for i, w in enumerate(weeks):
-        m = int(w[0]["date"][5:7])
-        x = pad_l + i * COLW * CW
-        if m != last_m and i < len(weeks) - 1 and x - last_x >= 34:
-            p.append(label(x, base_y, MON[m - 1], 9, "m-f"))
-            last_x = x
-        last_m = m
 
-    p.append("</svg>")
-    return "".join(p)
+def draw_heading(word):
+    text = word.upper()
+    lead = "═══╡ "
+    tail = " ╞"
+    fill = COLS - len(lead) - len(text) - len(tail)
+    rows = [[run(0, lead, "m-f", True),
+             run(len(lead), text, "e-f", True),
+             run(len(lead) + len(text), tail + "═" * fill, "m-f", True)]]
+    return screen(rows, font=font_head(), dur=0.9)
 
 
 # ---------------------------------------------------------------- main
@@ -439,8 +526,9 @@ def main():
     out_dir = os.environ.get("OUT_DIR", ".")
 
     s = summarise(fetch(login, token))
-    files = {"stats.svg": draw_stats(s), "streak.svg": draw_streak(s),
-             "langs.svg": draw_langs(s), "year.svg": draw_year(s)}
+    files = {"banner.svg": draw_banner(s), "stats.svg": draw_stats(s),
+             "streak.svg": draw_streak(s), "langs.svg": draw_langs(s),
+             "year.svg": draw_year(s)}
     for word in HEADINGS:
         files[f"hd-{word.replace(' ', '-')}.svg"] = draw_heading(word)
 
