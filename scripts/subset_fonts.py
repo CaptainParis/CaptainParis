@@ -16,8 +16,10 @@ RAMP = " .`:-=+*cs#%@"
 # The stat graphics draw an 80-column terminal screen, so beyond basic latin
 # they need the two blocks that make a screen look like one: box drawing
 # (U+2500-257F) for the frames and block elements (U+2580-259F) for the bars,
-# the sparkline and the year map. U+00B7 is the empty-cell dot.
-SCREEN = "U+0020-007E,U+00B7,U+2500-257F,U+2580-259F"
+# the sparkline and the year map. U+00B7 is the empty-cell dot, and the two
+# dashes are in the set because a fallback dash is not 0.600 em wide and would
+# push every cell after it off the grid.
+SCREEN = "U+0020-007E,U+00B7,U+2013-2014,U+2500-257F,U+2580-259F"
 
 # Headings are one rule line: uppercase, the two ends, and the horizontal run.
 HEADINGS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789═╡╞"

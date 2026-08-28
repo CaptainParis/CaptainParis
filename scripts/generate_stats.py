@@ -28,6 +28,7 @@ import functools
 import json
 import os
 import sys
+import textwrap
 import urllib.request
 from datetime import date, datetime, timedelta, timezone
 
@@ -74,6 +75,10 @@ MONO = ("JBMono,ui-monospace,SFMono-Regular,Menlo,Consolas,"
 FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
 
 HEADINGS = ("about", "stack", "projects", "stats", "about this page")
+
+MOTTO = ("Either way, you will suffer. Discipline hurts now, regret hurts "
+         "later \u2014 one of them is temporary, the other follows you into "
+         "every room for the rest of your life. Choose which pain you carry.")
 
 
 @functools.lru_cache(maxsize=None)
@@ -355,7 +360,7 @@ def draw_banner(s):
     name = s["name"].upper().replace(" ", "")[:8]
     art = block_name(name)
     side = [f"github.com/{s['login']}",
-            "PAPER PLUGINS FOR LIVE SERVERS",
+            "MINECRAFT PLUGINS · DISCORD BOTS",
             f"SEATTLE, WASHINGTON · SINCE {s['since']}"]
 
     body = [""]
@@ -370,6 +375,9 @@ def draw_banner(s):
         body.append([run(0, name, "e-f", True)])
         body += [[run(0, t)] for t in side]
     body.append("")
+    body.append("-")
+    for line in textwrap.wrap(MOTTO, COLS - 4):
+        body.append([run(0, line, "d-f")])
     body.append("-")
 
     status = (f"REPOS {s['repos']}", f"FOLLOWERS {s['followers']}",
