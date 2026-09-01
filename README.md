@@ -33,6 +33,14 @@ Draw an 8×8 sprite or paste an image. MineSkin signs a head, and<br>
 A Discord bot that runs deployment sign-ups for a milsim unit —<br>
 schedules, rosters and reminders, without a spreadsheet.
 
+<img src="./hd-demo.svg" width="620" alt="demo"/>
+
+**Stack** &nbsp;·&nbsp; <samp>java, paper</samp> &nbsp;·&nbsp; <samp>private</samp><br>
+The mobile game Stack, rebuilt out of display entities in a void world.<br>
+Slabs slide, you place them, the overhang gets trimmed away.
+
+<video src="https://github.com/CaptainParis/CaptainParis/raw/main/stacker-clip.mp4" controls muted loop width="620"></video>
+
 <img src="./hd-stats.svg" width="620" alt="stats"/>
 
 <div align="center">

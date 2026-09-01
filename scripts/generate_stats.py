@@ -74,7 +74,7 @@ MONO = ("JBMono,ui-monospace,SFMono-Regular,Menlo,Consolas,"
         "&apos;Liberation Mono&apos;,monospace")
 FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
 
-HEADINGS = ("about", "stack", "projects", "stats", "about this page")
+HEADINGS = ("about", "stack", "projects", "demo", "stats", "about this page")
 
 MOTTO = ("Either way, you will suffer. Discipline hurts now, regret hurts "
          "later \u2014 one of them is temporary, the other follows you into "
