@@ -1,4 +1,4 @@
-<div align="center"><img src="./ascii.svg" alt="Paris"/></div>
+<div align="center"><img src="./header.gif" alt="CaptainParis"/></div>
 
 <div align="center">
 
