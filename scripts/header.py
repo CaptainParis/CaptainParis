@@ -9,7 +9,7 @@ name=[l for l in name if l.strip()]
 NW=max(len(l) for l in name); NH=len(name)
 COLS,ROWS=NW+8,NH+10
 OX=(COLS-NW)//2; OY=3
-FPS=15; BUILD=int(5.5*FPS); HOLD=int(3.5*FPS); TOTAL=BUILD+HOLD
+FPS=15; BUILD=int(7*FPS); HOLD=int(4*FPS); TOTAL=BUILD+HOLD
 FS=13
 font=ImageFont.truetype('/usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf',FS)
 bold=ImageFont.truetype('/usr/share/fonts/TTF/JetBrainsMonoNerdFont-Bold.ttf',FS)
@@ -18,18 +18,25 @@ PAD=10
 W=COLS*CW+PAD*2; H=ROWS*CH+PAD*2
 BG=(26,27,39); LET=(192,202,245); SHD=(122,162,247); SANDC=(224,175,104)
 # targets
-targets=[]
+GROUND=(158,206,106); WALL=(224,175,104)
+targets=[]  # (x, y, char, color)
 for r,l in enumerate(name):
     for c,ch in enumerate(l):
-        if ch!=' ': targets.append((OX+c,OY+r,ch))
+        if ch!=' ': targets.append((OX+c,OY+r,ch,LET if ch=='█' else SHD))
+for x in range(COLS):
+    targets.append((x,ROWS-1,'GROUND_'[x%7],GROUND))
+    targets.append((x,0,'GROUND_'[x%7],GROUND))
+for y in range(1,ROWS-1):
+    targets.append((0,y,'WALL'[y%4],WALL))
+    targets.append((COLS-1,y,'WALL'[y%4],WALL))
 # spawn schedule: lower rows first, with jitter, whole build fits in BUILD minus fall time
 fall=ROWS
 grains=[]
-for (tx,ty,ch) in targets:
-    depth=(OY+NH-1)-ty  # 0 for bottom row
-    spawn=int(depth*(BUILD-fall-20)/NH)+random.randint(0,18)
+for (tx,ty,ch,col) in targets:
+    depth=(ROWS-1)-ty  # 0 for bottom row
+    spawn=int(depth*(BUILD-fall-20)/ROWS)+random.randint(0,18)
     sx=max(0,min(COLS-1,tx+random.randint(-10,10)))
-    grains.append(dict(tx=tx,ty=ty,ch=ch,spawn=spawn,x=sx,y=-1,landed=False,fc=random.choice('sand')))
+    grains.append(dict(tx=tx,ty=ty,ch=ch,col=col,spawn=spawn,x=sx,y=-1,landed=False,fc=random.choice('sand')))
 # flame
 flame='...::/\\/\\/\\+=*abcdef01XYZ#'
 data=[0]*(COLS*ROWS)
@@ -86,8 +93,8 @@ for fr in range(TOTAL):
                 continue
         x,y=g['tx'],g['ty']
         d.rectangle((PAD+x*CW,PAD+y*CH,PAD+x*CW+CW,PAD+y*CH+CH),fill=BG)
-        if g['ch']=='█': d.rectangle((PAD+x*CW,PAD+y*CH,PAD+x*CW+CW,PAD+y*CH+CH),fill=LET)
-        else: d.text((PAD+x*CW,PAD+y*CH),g['ch'],font=bold,fill=SHD)
+        if g['ch']=='█': d.rectangle((PAD+x*CW,PAD+y*CH,PAD+x*CW+CW,PAD+y*CH+CH),fill=g['col'])
+        else: d.text((PAD+x*CW,PAD+y*CH),g['ch'],font=bold,fill=g['col'])
     frames.append(img.quantize(colors=48,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.NONE))
-frames[0].save(os.path.join(S,'..','header.gif'),save_all=True,append_images=frames[1:],duration=int(1000/FPS),loop=0,optimize=True)
+frames[0].save(os.path.join(S,'..','header.gif'),save_all=True,append_images=frames[1:],duration=int(1000/FPS),optimize=True)  # no loop: plays once, holds last frame
 print(W,H,TOTAL)
