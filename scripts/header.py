@@ -96,5 +96,5 @@ for fr in range(TOTAL):
         if g['ch']=='█': d.rectangle((PAD+x*CW,PAD+y*CH,PAD+x*CW+CW,PAD+y*CH+CH),fill=g['col'])
         else: d.text((PAD+x*CW,PAD+y*CH),g['ch'],font=bold,fill=g['col'])
     frames.append(img.quantize(colors=48,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.NONE))
-frames[0].save(os.path.join(S,'..','header.gif'),save_all=True,append_images=frames[1:],duration=int(1000/FPS),optimize=True)  # no loop: plays once, holds last frame
+frames[0].save(os.path.join(S,'..','frame.gif'),save_all=True,append_images=frames[1:],duration=int(1000/FPS),optimize=True)  # no loop: plays once, holds last frame
 print(W,H,TOTAL)

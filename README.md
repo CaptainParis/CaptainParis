@@ -1,4 +1,4 @@
-<div align="center"><img src="./header.gif" alt="CaptainParis"/></div>
+<div align="center"><img src="./frame.gif" alt="CaptainParis"/></div>
 
 <div align="center">
 
@@ -24,5 +24,3 @@
 <img src="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=tokyonight&hide_border=true&background=1a1b27" alt="streak"/>
 
 </div>
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:7aa2f7,100:1a1b27&height=100&section=footer" width="100%" alt=""/>
