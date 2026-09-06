@@ -1,61 +1,13 @@
-<div align="center">
+### Paris
 
-<img src="./banner.svg" width="620" alt="Paris — Paper plugins, Seattle, Washington"/>
+Paper plugins, from Seattle. Packet-level player capture and sprites in chat, for live Minecraft servers.
 
-<img src="./ascii.svg" width="460" alt="Paris"/>
+**Projects**
 
-<img src="./stats.svg" width="620" alt="Contributions in the last year"/>
+- [Mocap](https://github.com/CaptainParis/Mocap) — record a player and the chunks around them, then replay the take as ProtocolLib packet actors. Not NPCs or fake players.
+- [HeadSprites](https://github.com/CaptainParis/HeadSprites) — draw an 8×8 sprite or paste an image, MineSkin signs a head, `<head:heart>` puts it in chat. No resource pack.
+- [DeploymentBot](https://github.com/CaptainParis/DeploymentBot) — Discord bot that runs deployment sign-ups for a milsim unit. Schedules, rosters, reminders.
 
-</div>
+**Stack**
 
-<img src="./hd-about.svg" width="620" alt="about"/>
-
-> Paper plugins, from Seattle.
-
-I write Minecraft plugins for live servers — packet-level player<br>
-capture and sprites in chat.
-
-<img src="./hd-stack.svg" width="620" alt="stack"/>
-
-<samp>java &nbsp; kotlin &nbsp; python &nbsp; typescript &nbsp; paper &nbsp; protocollib &nbsp; docker &nbsp; git</samp>
-
-<img src="./hd-projects.svg" width="620" alt="projects"/>
-
-<samp>[ 1 ]</samp> &nbsp; **[Mocap](https://github.com/CaptainParis/Mocap)** &nbsp;·&nbsp; <samp>java, paper</samp><br>
-Record a player and the chunks around them, then replay the take as<br>
-packet actors — ProtocolLib entities, not NPCs or fake players.
-
-<samp>[ 2 ]</samp> &nbsp; **[HeadSprites](https://github.com/CaptainParis/HeadSprites)** &nbsp;·&nbsp; <samp>java, paper</samp><br>
-Draw an 8×8 sprite or paste an image. MineSkin signs a head, and<br>
-<code>&lt;head:heart&gt;</code> puts it in chat. No resource pack. Paper 1.21.9+.
-
-<samp>[ 3 ]</samp> &nbsp; **[DeploymentBot](https://github.com/CaptainParis/DeploymentBot)** &nbsp;·&nbsp; <samp>typescript</samp><br>
-A Discord bot that runs deployment sign-ups for a milsim unit —<br>
-schedules, rosters and reminders, without a spreadsheet.
-
-<img src="./hd-demo.svg" width="620" alt="demo"/>
-
-**Stack** &nbsp;·&nbsp; <samp>java, paper</samp> &nbsp;·&nbsp; <samp>private</samp><br>
-The mobile game Stack, rebuilt out of display entities in a void world.<br>
-Slabs slide, you place them, the overhang gets trimmed away.
-
-<video src="https://github.com/CaptainParis/CaptainParis/raw/main/stacker-clip.mp4" controls muted loop width="620"></video>
-
-<img src="./hd-stats.svg" width="620" alt="stats"/>
-
-<div align="center">
-
-<img src="./streak.svg" width="620" alt="Current and longest streak"/>
-
-<img src="./langs.svg" width="620" alt="Top languages by bytes and by repo"/>
-
-<img src="./year.svg" width="620" alt="The last year, one character per day"/>
-
-</div>
-
-<img src="./hd-about-this-page.svg" width="620" alt="about this page"/>
-
-Every graphic here is an 80-column terminal screen drawn by <code>scripts/generate_stats.py</code><br>
-in this repo — box drawing for the frames, block elements for the bars, and a<br>
-clipPath wipe so each line prints. Nothing is loaded from someone else's server.<br>
-Portrait from a photo; stats from the GitHub API, once a day.
+Java, Kotlin, Python, TypeScript · Paper, ProtocolLib · Docker
