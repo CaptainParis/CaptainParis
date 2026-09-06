@@ -1,33 +1,37 @@
-<div align="center">
+## Paris
 
-<img src="https://capsule-render.vercel.app/api?type=slice&color=0:282828,50:fe8019,100:fabd2f&height=150&section=header&rotate=12" width="100%" alt=""/>
+Block game developer. Java, Kotlin and TypeScript.
+Building tools for Minecraft servers: player recording, packet-level entities, custom chat rendering.
 
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Press+Start+2P&size=22&pause=1500&color=FABD2F&center=true&vCenter=true&width=700&height=60&lines=CAPTAINPARIS;BLOCK+GAME+DEVELOPER;JAVA+%2F+KOTLIN+%2F+TYPESCRIPT;DOING+COOL+THINGS" alt="CaptainParis"/></a>
+### Projects
 
-<br/>
+| Project | What it does | Stack |
+| :-- | :-- | :-- |
+| **[Mocap](https://github.com/CaptainParis/Mocap)** | Records a player and the world around them, then replays the take as packet actors. | Java · Paper · ProtocolLib |
+| **[HeadSprites](https://github.com/CaptainParis/HeadSprites)** | Custom head sprites rendered inline in chat. No resource pack required. | Java · Paper · MineSkin |
 
-<img src="https://skillicons.dev/icons?i=java,kotlin,python,ts,gradle,docker,git&theme=dark" alt="stack"/>
+### Stack
 
-<br/><br/>
+![Java](https://img.shields.io/badge/Java-000?style=flat-square&logo=openjdk&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-000?style=flat-square&logo=kotlin&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-000?style=flat-square&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-000?style=flat-square&logo=python&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-000?style=flat-square&logo=gradle&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-000?style=flat-square&logo=docker&logoColor=white)
+![Git](https://img.shields.io/badge/Git-000?style=flat-square&logo=git&logoColor=white)
 
-<a href="https://github.com/CaptainParis/Mocap"><img src="https://img.shields.io/badge/Mocap-record%20%26%20replay%20players%20as%20packet%20actors-282828?style=for-the-badge&logo=github&logoColor=282828&labelColor=fe8019" alt="Mocap"/></a>
-<br/>
-<a href="https://github.com/CaptainParis/HeadSprites"><img src="https://img.shields.io/badge/HeadSprites-custom%20head%20sprites%20inline%20in%20chat-282828?style=for-the-badge&logo=github&logoColor=282828&labelColor=fabd2f" alt="HeadSprites"/></a>
+### Activity
 
-<br/><br/>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=CaptainParis&theme=github_dark">
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=CaptainParis&theme=github" height="180" alt="stats">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=CaptainParis&theme=github_dark">
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=CaptainParis&theme=github" height="180" alt="languages">
+</picture>
 
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=CaptainParis&theme=gruvbox" height="190" alt="stats"/>
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=CaptainParis&theme=gruvbox" height="190" alt="languages"/>
-
-<br/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=gruvbox&hide_border=true" alt="streak"/>
-
-<br/>
-
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=CaptainParis&theme=gruvbox&utcOffset=-7" height="190" alt="productive time"/>
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=CaptainParis&theme=gruvbox" height="190" alt="commit languages"/>
-
-<img src="https://capsule-render.vercel.app/api?type=slice&color=0:fabd2f,50:fe8019,100:282828&height=100&section=footer&rotate=-12" width="100%" alt=""/>
-
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=github-dark-blue&hide_border=true">
+  <img src="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=default&hide_border=true" alt="streak">
+</picture>
