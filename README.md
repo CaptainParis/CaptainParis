@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./frame.gif" alt="CaptainParis"/>
+<img src="./sand.gif" alt="CaptainParis"/>
 
 <sub>[Mocap](https://github.com/CaptainParis/Mocap) · [HeadSprites](https://github.com/CaptainParis/HeadSprites)</sub>
 

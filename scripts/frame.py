@@ -1,4 +1,4 @@
-# Renders frame.gif: the whole profile page poured in as sand. Text cells
+# Renders sand.gif: the whole profile page poured in as sand. Text cells
 # fall as characters; images (skill icons, badges, stat cards) fall as
 # 4x4 px grains coloured like the pixel they will become, so each picture
 # piles up from the bottom until it is complete.
@@ -148,6 +148,6 @@ for fr in range(TOTAL):
     if preview and fr in (40, 70, TOTAL - 1): img.save(os.path.join(preview, f"f{fr}.png"))
 
 # No loop extension: plays once and rests on the finished page.
-frames[0].save(os.path.join(HERE, "..", "frame.gif"), save_all=True, append_images=frames[1:],
+frames[0].save(os.path.join(HERE, "..", "sand.gif"), save_all=True, append_images=frames[1:],
                duration=int(1000 / FPS), optimize=True)
 print(f"{W}x{H} {TOTAL} frames {len(grains)} grains")
