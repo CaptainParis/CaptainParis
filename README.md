@@ -1,4 +1,7 @@
-## Paris
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=CaptainParis&theme=github_dark">
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=CaptainParis&theme=github" width="100%" alt="CaptainParis">
+</picture>
 
 Block game developer. Java, Kotlin and TypeScript.
 Building tools for Minecraft servers: player recording, packet-level entities, custom chat rendering.
@@ -12,13 +15,7 @@ Building tools for Minecraft servers: player recording, packet-level entities, c
 
 ### Stack
 
-![Java](https://img.shields.io/badge/Java-000?style=flat-square&logo=openjdk&logoColor=white)
-![Kotlin](https://img.shields.io/badge/Kotlin-000?style=flat-square&logo=kotlin&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-000?style=flat-square&logo=typescript&logoColor=white)
-![Python](https://img.shields.io/badge/Python-000?style=flat-square&logo=python&logoColor=white)
-![Gradle](https://img.shields.io/badge/Gradle-000?style=flat-square&logo=gradle&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-000?style=flat-square&logo=docker&logoColor=white)
-![Git](https://img.shields.io/badge/Git-000?style=flat-square&logo=git&logoColor=white)
+<a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=java,kotlin,ts,python,gradle,docker,git,linux&perline=8" alt="Java, Kotlin, TypeScript, Python, Gradle, Docker, Git, Linux"/></a>
 
 ### Activity
 
@@ -34,4 +31,9 @@ Building tools for Minecraft servers: player recording, packet-level entities, c
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=github-dark-blue&hide_border=true">
   <img src="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=default&hide_border=true" alt="streak">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CaptainParis/CaptainParis/output/github-snake-dark.svg">
+  <img src="https://raw.githubusercontent.com/CaptainParis/CaptainParis/output/github-snake.svg" width="100%" alt="contribution snake">
 </picture>
