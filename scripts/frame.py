@@ -1,4 +1,4 @@
-# Renders sand.gif: the whole profile page poured in as sand. Text cells
+# Renders page.gif: the whole profile page poured in as sand. Text cells
 # fall as characters; images (skill icons, badges, stat cards) fall as
 # 4x4 px grains coloured like the pixel they will become, so each picture
 # piles up from the bottom until it is complete.
@@ -16,13 +16,14 @@ random.seed(7)
 BG = (26, 27, 39); LET = (192, 202, 245); SHD = (122, 162, 247); DIM = (86, 95, 137)
 SANDC = (224, 175, 104)
 
-FS = 13
+SS = 2  # supersample: render at 2x, README shows it at 1x so it stays crisp on HiDPI
+FS = 13 * SS
 font = ImageFont.truetype(os.path.join(HERE, "fonts", "JetBrainsMono-Regular.ttf"), FS)
 bold = ImageFont.truetype(os.path.join(HERE, "fonts", "JetBrainsMono-Bold.ttf"), FS)
 bb = font.getbbox("█"); CW = bb[2] - bb[0]; CH = int(FS * 1.25)
 COLS = 100
-PAD = 12
-G = 4  # image grain size in px
+PAD = 12 * SS
+G = 4 * SS  # image grain size in px
 
 # ---------------------------------------------------------------- images
 def svg_png(url, width_px):
@@ -57,14 +58,17 @@ def put(x, y, text, color, f=font):
         grains.append(dict(x0=PAD + (x + i) * CW, y0=PAD + y * CH, w=CW, h=CH, kind="char",
                            ch=ch, col=color, f=f))
 
-def place(img, y, rows, x=None):
-    """Scale img to `rows` rows (keeping aspect), centre it, cut into GxG grains."""
+def place(img, y, rows, x=None, align="center"):
+    """Scale img to `rows` rows (keeping aspect), position it, cut into GxG grains.
+    x is in cells: the left edge, or with align="right" the right edge."""
     if img is None: return
     h = rows * CH; w = round(img.width * h / img.height)
     if w > (COLS - 4) * CW:
         w = (COLS - 4) * CW; h = round(img.height * w / img.width)
     img = img.resize((w, h), Image.LANCZOS)
-    x0 = PAD + ((COLS * CW - w) // 2 if x is None else x * CW)
+    if x is None: x0 = PAD + (COLS * CW - w) // 2
+    elif align == "right": x0 = PAD + x * CW - w
+    else: x0 = PAD + x * CW
     y0 = PAD + y * CH + (rows * CH - h) // 2
     flat = Image.new("RGB", img.size, BG); flat.paste(img, (0, 0), img)
     for gy in range(0, h, G):
@@ -72,7 +76,7 @@ def place(img, y, rows, x=None):
             tile = flat.crop((gx, gy, min(gx + G, w), min(gy + G, h)))
             if tile.getbbox() is None: continue
             px = tile.resize((1, 1), Image.BOX).getpixel((0, 0))
-            if px == BG or max(abs(px[i] - BG[i]) for i in range(3)) < 6: continue  # background: nothing to pour
+            if max(abs(px[i] - BG[i]) for i in range(3)) < 3: continue  # background: nothing to pour
             grains.append(dict(x0=x0 + gx, y0=y0 + gy, w=tile.width, h=tile.height, kind="tile", tile=tile, col=px))
 
 name = [l.rstrip("\n") for l in open(os.path.join(HERE, "name.txt"))]
@@ -83,30 +87,33 @@ y = 1
 for r, l in enumerate(name):
     for c, ch in enumerate(l):
         if ch != " ": put((COLS - NW) // 2 + c, y + r, ch, LET if ch == "█" else SHD, bold)
-y += len(name) + 1
+y += len(name) + 2
 tag = "block game developer   ·   java kotlin typescript   ·   doing cool things"
-put((COLS - len(tag)) // 2, y, tag, DIM); y += 2
+put((COLS - len(tag)) // 2, y, tag, DIM); y += 3
 
-imgs = {k: svg_png(u, 1200) for k, u in IMAGES.items()}
-place(imgs["icons"], y, 3); y += 4
-place(imgs["mocap"], y, 2); y += 2
-place(imgs["heads"], y, 2); y += 3
+imgs = {k: svg_png(u, 1600) for k, u in IMAGES.items()}
+place(imgs["icons"], y, 3); y += 5
+# badges: both left-aligned to the same column, the pair centred as a block
+bw = max(round(im.width * 2 * CH / im.height) for im in (imgs["mocap"], imgs["heads"]) if im) // CW
+bx = (COLS - bw) // 2
+place(imgs["mocap"], y, 2, x=bx); y += 3
+place(imgs["heads"], y, 2, x=bx); y += 4
 cw = 44
 place(imgs["stats"], y, 14, x=(COLS - 2 * cw - 2) // 2)
 place(imgs["langs"], y, 14, x=(COLS - 2 * cw - 2) // 2 + cw + 2)
-y += 15
-place(imgs["streak"], y, 12); y += 12
+y += 16
+place(imgs["streak"], y, 12); y += 13
 
 W = COLS * CW + PAD * 2; H = y * CH + PAD * 2
 FPS = 10; BUILD = int(9 * FPS); HOLD = int(2 * FPS); TOTAL = BUILD + HOLD
-FALL = 28  # px per frame
+FALL = 28 * SS  # px per frame
 
 # spawn: bottom of the page first, so everything piles up like sand
 window = BUILD - H // FALL - 8
 for g in grains:
     depth = (H - g["y0"]) / H
     g["spawn"] = int(depth * window) + random.randint(0, 8)
-    g["x"] = max(0, min(W - g["w"], g["x0"] + random.randint(-40, 40)))
+    g["x"] = max(0, min(W - g["w"], g["x0"] + random.randint(-40 * SS, 40 * SS)))
     g["y"] = -g["h"] - random.randint(0, FALL)
     g["landed"] = False
     if g["kind"] == "char": g["fc"] = random.choice("sand")
@@ -128,7 +135,7 @@ for fr in range(TOTAL):
         g["y"] += FALL
         dx = g["x0"] - g["x"]; left = g["y0"] - g["y"]
         if dx:
-            step = min(abs(dx), 6 if left > FALL * 2 else abs(dx))
+            step = min(abs(dx), 6 * SS if left > FALL * 2 else abs(dx))
             if random.random() < 0.7 or left <= FALL * 2: g["x"] += step if dx > 0 else -step
         if g["y"] >= g["y0"]:
             g["landed"] = True
@@ -148,6 +155,6 @@ for fr in range(TOTAL):
     if preview and fr in (40, 70, TOTAL - 1): img.save(os.path.join(preview, f"f{fr}.png"))
 
 # No loop extension: plays once and rests on the finished page.
-frames[0].save(os.path.join(HERE, "..", "sand.gif"), save_all=True, append_images=frames[1:],
+frames[0].save(os.path.join(HERE, "..", "page.gif"), save_all=True, append_images=frames[1:],
                duration=int(1000 / FPS), optimize=True)
 print(f"{W}x{H} {TOTAL} frames {len(grains)} grains")
