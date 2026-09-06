@@ -1,8 +1,8 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1b27,100:7aa2f7&height=160&section=header&text=Paris&fontColor=c0caf5&fontSize=56&fontAlignY=38&animation=fadeIn" width="100%" alt=""/>
+<div align="center"><img src="./ascii.svg" alt="Paris"/></div>
 
 <div align="center">
 
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1200&color=7AA2F7&center=true&vCenter=true&width=520&lines=Minecraft+plugin+developer;Java+%C2%B7+Kotlin+%C2%B7+TypeScript;Building+things+for+live+servers" alt=""/></a>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1200&color=7AA2F7&center=true&vCenter=true&width=520&lines=Block+game+developer;Java+%C2%B7+Kotlin+%C2%B7+TypeScript;Doing+cool+things" alt=""/></a>
 
 <br/>
 
