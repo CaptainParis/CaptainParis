@@ -1,39 +1,12 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=CaptainParis&theme=github_dark">
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=CaptainParis&theme=github" width="100%" alt="CaptainParis">
-</picture>
+<div align="center">
 
-Block game developer. Java, Kotlin and TypeScript.
-Building tools for Minecraft servers: player recording, packet-level entities, custom chat rendering.
+<img src="./dino.svg" width="600" alt=""/>
 
-### Projects
+</div>
 
-| Project | What it does | Stack |
-| :-- | :-- | :-- |
-| **[Mocap](https://github.com/CaptainParis/Mocap)** | Records a player and the world around them, then replays the take as packet actors. | Java · Paper · ProtocolLib |
-| **[HeadSprites](https://github.com/CaptainParis/HeadSprites)** | Custom head sprites rendered inline in chat. No resource pack required. | Java · Paper · MineSkin |
+<br/><br/><br/>
 
-### Stack
+### Popular repositories
 
-<a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=java,kotlin,ts,python,gradle,docker,git,linux&perline=8" alt="Java, Kotlin, TypeScript, Python, Gradle, Docker, Git, Linux"/></a>
-
-### Activity
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=CaptainParis&theme=github_dark">
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=CaptainParis&theme=github" height="180" alt="stats">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=CaptainParis&theme=github_dark">
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=CaptainParis&theme=github" height="180" alt="languages">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=github-dark-blue&hide_border=true">
-  <img src="https://github-readme-streak-stats.herokuapp.com?user=CaptainParis&theme=default&hide_border=true" alt="streak">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CaptainParis/CaptainParis/output/github-snake-dark.svg">
-  <img src="https://raw.githubusercontent.com/CaptainParis/CaptainParis/output/github-snake.svg" width="100%" alt="contribution snake">
-</picture>
+- **[Mocap](https://github.com/CaptainParis/Mocap)** — record a player and the world around them, replay the take as packet actors.
+- **[HeadSprites](https://github.com/CaptainParis/HeadSprites)** — custom head sprites inline in chat, no resource pack.
