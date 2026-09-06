@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
-      - run: pip install pillow
+      - run: pip install pillow && sudo apt-get install -y -qq librsvg2-bin fonts-dejavu-core
       - name: Render frame.gif
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
